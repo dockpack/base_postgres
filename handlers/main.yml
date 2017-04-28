@@ -1,0 +1,14 @@
+---
+
+# handlers file for actions that are notified: by a play
+- name: 'start postgresql-{{ base_postgres_m }}'
+  become: yes
+  service: name=postgresql-{{ base_postgres_m }} state=started
+
+- name: 'restart postgresql-{{ base_postgres_m }}'
+  become: yes
+  service: name=postgresql-{{ base_postgres_m }} state=restarted
+
+#- name: 'restart iptables'
+#  become: yes
+#  service: name=iptables state=restarted

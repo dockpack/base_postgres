@@ -1,0 +1,22 @@
+# TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+
+local   all         postgres                          trust
+local   all         root                              trust
+# "local" is for Unix domain socket connections only
+local   all         all                               trust
+# IPv4 local connections
+host    all         all         127.0.0.1/32          trust
+# IPv6 local connections:
+host    all         all         ::1/128               trust
+
+{% if slave_ip is defined %}
+    # The database slave needs access to the database
+host    replication all         {{ base_postgres_sip }}/32     trust
+host    replication all         {{ base_postgres_mip }}/32        trust
+   # The database needs access to the database slave
+{% endif %}
+
+{% if pg_subnet is defined %}
+# The application needs access to the database
+host    all         all         {{ base_postgres_net }}       password
+{% endif %}
