@@ -80,7 +80,7 @@
                  backup=no
                  owner=root mode=0700
   become: yes
-  when: base_postgres_role is defined and role == "slave"
+  when: base_postgres_role is defined and base_postgres_role == "slave"
   tags:
     - config
     - postgres
