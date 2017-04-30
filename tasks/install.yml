@@ -15,25 +15,25 @@
 
 - name: 'install the EPEL yum repo'
   become: yes
+  when: ansible_os_family == 'RedHat'
   yum: name=epel-release state=present
-  when: ansible_os_family == "RedHat"
   tags:
     - install
     - postgres
 
 - name: 'install the postgres yum repo'
   become: yes
+  when: ansible_os_family == 'RedHat'
   yum: name={{ base_postgres_repo }} state=present
-  when: ansible_os_family == "RedHat"
   tags:
     - install
     - postgres
 
 - name: 'install postgres packages'
   become: yes
+  when: ansible_os_family == 'RedHat'
   yum: name={{ item }} state=present
   with_items: '{{ base_postgres_packages }}'
-  when: ansible_os_family == "RedHat"
   tags:
     - install
     - postgres
