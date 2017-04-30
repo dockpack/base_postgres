@@ -13,13 +13,6 @@
   tags:
     - postgres
 
-- name: 'install the EPEL yum repo'
-  become: yes
-  when: ansible_os_family == 'RedHat'
-  yum: name=epel-release state=present
-  tags:
-    - install
-    - postgres
 
 - name: 'install the postgres yum repo'
   become: yes
