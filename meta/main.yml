@@ -41,11 +41,7 @@ galaxy_info:
   # Below are all categories currently available. Just as with
   # the platforms above, uncomment those that apply to your role.
   #
-  galaxy_tags:
-  #- cloud
-  - databases
-  #- packaging
-  #- system
+  galaxy_tags: ['container']
 dependencies: []
   # List your role dependencies here, one per line. Only
   # dependencies available via galaxy should be listed here.
