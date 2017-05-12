@@ -1,4 +1,5 @@
 ---
+
 - name: 'verify the version of your OS.'
   fail: msg='enterprise undefined'
   when: ansible_os_family != "RedHat"
