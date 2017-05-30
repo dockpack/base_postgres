@@ -64,7 +64,7 @@
     - postgres
 
 - name: 'configure pg_hba.conf'
-  template: src={{ your_template_path | default() }}pg_hba.conf.j2 dest=/var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf backup=no
+  template: src={{ your_template_path | default() }}pg_hba.conf dest=/var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf backup=no
             owner=postgres
   become: yes
   notify:
@@ -75,7 +75,7 @@
     - replica
 
 - name: 'copy start_pg_slave.sh'
-  template: src=start_pg_slave.sh.j2
+  template: src=start_pg_slave.sh
                  dest=/usr/local/bin/start_pg_slave.sh
                  backup=no
                  owner=root mode=0700
