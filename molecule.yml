@@ -64,4 +64,4 @@ vagrant:
     append_platform_to_hostname: no
 
 verifier:
-  name: testinfra
+  name: goss
