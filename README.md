@@ -15,11 +15,11 @@ Role Variables
 The first three vars you must set, the others are optional.
 
     base_postgres_mip  # This is the ip address of the primary or master database
-    base_postgres_user # This is your user
-    base_postgres_pass # This is your password
+    vault_postgres_user  # This is your user stored in vault file
+    vault_postgres_pass  # This is your password stored in vault file
 
     base_postgres_net  # 192.168.20.0/24 This is the subnet granted access
-	  base_postgres_role # If you want 2 hosts then one is master, the other slave
+	base_postgres_role # If you want 2 hosts then one is master, the other slave
     base_postgres_sip  # The ip address of the slave when you use 2 databases
 
 
@@ -52,7 +52,7 @@ Including an example of how to use your role (for instance, with variables passe
 			- include: dbservers/pre_tasks.yml
 
 		roles:
-			- bbaassssiiee.base_postgres_role
+			- dockpack.base_postgres_role
 		- rsyslog
 
 		tasks: []
@@ -68,5 +68,5 @@ BSD, MIT
 Author Information
 ------------------
 http://twitter.com/bbaassssiiee
-https://github.com/bbaassssiiee/base_postgres_role.git
+https://github.com/dockpack/base_postgres_role.git
 
