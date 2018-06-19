@@ -2,4 +2,3 @@
 
 base_postgres_user: "{{ vault_postgres_user }}"
 base_postgres_pass: "{{ vault_postgres_pass }}"
-
