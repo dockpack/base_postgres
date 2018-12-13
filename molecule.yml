@@ -1,5 +1,9 @@
 ---
 
+dependency:
+  name: galaxy
+  requirements_file: requirements.yml
+
 molecule:
 
   test:
@@ -27,8 +31,8 @@ vagrant:
     - "ssh.insert_key = false"
 
   platforms:
-    - name: dockpack/centos6
-      box: dockpack/centos6
+    - name: centos/7
+      box: centos/7
 
   providers:
     - name: virtualbox
