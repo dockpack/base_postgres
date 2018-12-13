@@ -11,6 +11,8 @@ __pycache__/
 
 .DS_Store
 .vagrant
+.molecule
+.tox
 
 # Distribution / packaging
 .Python
