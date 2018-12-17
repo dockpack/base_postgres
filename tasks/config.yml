@@ -157,8 +157,11 @@
 
 #- name: 'set replication setting: checkpoint_segments'
 #  become: yes
-#  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^#checkpoint_segments'
-#              line="checkpoint_segments = 8" state=present
+#  lineinfile:
+#    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+#    insertafter: '^#checkpoint_segments'
+#    line: "checkpoint_segments = 8"
+#    state: present
 #  tags:
 #    - replica
 
