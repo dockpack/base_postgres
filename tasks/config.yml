@@ -1,12 +1,16 @@
 ---
 
+- name: Copy goss tests template¬
+  template:
+    src: postgres_goss.yml
+    dest: /root/postgres_goss.yml
+
 - name: 'make sure .bashrc exists'
   become: no
   file:
     path: ~/.bashrc
     state: file
   tags:
-    - postgres
     - bash
 
 - name: 'amend path variable'
@@ -15,7 +19,6 @@
     line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
     state: present
   tags:
-    - postgres
     - bash
 
 - name: 'make sure .bash_profile exists'
@@ -25,7 +28,6 @@
     path: /var/lib/pgsql/.bash_profile
     state: file
   tags:
-    - postgres
     - bash
 
 - name: 'amend path variable'
@@ -36,7 +38,6 @@
     line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
     state: present
   tags:
-    - postgres
     - bash
 
 - name: 'init postgresql database'
@@ -50,7 +51,6 @@
   tags:
     - install
     - init
-    - postgres
 
 - name: 'init postgresql database'
   command: /usr/pgsql-{{ base_postgres_m }}/bin/postgresql{{ base_postgres_s }}-setup initdb
@@ -63,7 +63,6 @@
   tags:
     - install
     - init
-    - postgres
 
 - name: 'ensure postgresql is running automatically at boot'
   service:
@@ -73,7 +72,6 @@
   when: ansible_os_family == 'RedHat'
   tags:
     - install
-    - postgres
 
 - name: 'configure pg_hba.conf'
   template:
@@ -86,7 +84,6 @@
     - restart postgresql-{{ base_postgres_m }}
   tags:
     - config
-    - postgres
     - replica
 
 - name: 'copy start_pg_slave.sh'
@@ -100,7 +97,6 @@
   when: base_postgres_role is defined and base_postgres_role == "slave"
   tags:
     - config
-    - postgres
     - replica
 
 - name: 'unset ip to listen on to ipv4 localhost'
@@ -112,14 +108,11 @@
     state: absent
   tags:
     - config
-    - postgres
 
 - name: 'see if iptables file exists'
   stat:
     path: /etc/sysconfig/iptables
   register: iptables
-  tags:
-    - postgres
 
 - name: 'fix "postgresql" in /etc/sysconfig/iptables file'
   become: yes
@@ -133,7 +126,6 @@
   tags:
     - config
     - iptables
-    - postgres
 
 - name: 'set listen on on ipv4 addresses'
   become: yes
@@ -142,8 +134,6 @@
     insertbefore: '^#listen_addresses'
     line: "listen_addresses = '*'"
     state: present
-  tags:
-    - postgres
 
 - name: 'set replication setting: wal_level'
   become: yes
@@ -153,7 +143,6 @@
     line: "wal_level = hot_standby"
     state: present
   tags:
-    - postgres
     - replica
 
 - name: 'set replication setting: max_wal_senders'
@@ -164,7 +153,6 @@
     line: "max_wal_senders = 3"
     state: present
   tags:
-    - postgres
     - replica
 
 #- name: 'set replication setting: checkpoint_segments'
@@ -172,7 +160,6 @@
 #  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^#checkpoint_segments'
 #              line="checkpoint_segments = 8" state=present
 #  tags:
-#    - postgres
 #    - replica
 
 - name: 'set replication setting: wal_keep_segments'
@@ -183,7 +170,6 @@
     line: "wal_keep_segments = 8"
     state: present
   tags:
-    - postgres
     - replica
 
 - name: 'set replication setting: hot_standby'
@@ -194,7 +180,6 @@
     line: "hot_standby = on"
     state: present
   tags:
-    - postgres
     - replica
 
 - name: 'set replication setting: archive_mode'
@@ -205,7 +190,6 @@
     line: "archive_mode = on"
     state: present
   tags:
-    - postgres
     - replica
 
 - name: 'set replication setting: archive_command'
@@ -216,7 +200,6 @@
     line: "archive_command = 'cd .'"
     state: present
   tags:
-    - postgres
     - replica
 
 - name: 'startup postgres'
@@ -225,7 +208,6 @@
     state: started
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
-    - postgres
     - config
     - pguser
 
@@ -238,7 +220,6 @@
   become_user: postgres
   register: create_pg_user
   tags:
-    - postgres
     - pguser
 
 - name: 'set the password for the postgres user'
@@ -249,7 +230,6 @@
   become_user: postgres
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
-    - postgres
     - pguser
 
 - name: 'initialize the replicator user'
@@ -261,7 +241,6 @@
     password: "{{ base_postgres_pass }}"
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
-    - postgres
     - pguser
     - replica
 
@@ -272,6 +251,5 @@
       Password: "{{ base_postgres_pass }}"
   when: base_postgres_role is defined and base_postgres_role == "slave"
   tags:
-    - postgres
     - replica
     - startslave
