@@ -24,6 +24,7 @@ molecule:
     - .git
     - .vagrant
     - .molecule
+    - .tox
 
 
 vagrant:
