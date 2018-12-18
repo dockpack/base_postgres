@@ -1,5 +1,9 @@
 ---
 
+dependency:
+  name: galaxy
+  requirements_file: requirements.yml
+
 molecule:
 
   test:
@@ -20,15 +24,18 @@ molecule:
     - .git
     - .vagrant
     - .molecule
+    - .tox
 
 
 vagrant:
   raw_config_args:
-    - "ssh.insert_key = false"
+    - 'vm.synced_folder ".", "/vagrant", disabled: true'
+    - 'vbguest.auto_update = false'
+    - 'ssh.insert_key = false'
 
   platforms:
-    - name: dockpack/centos6
-      box: dockpack/centos6
+    - name: centos/7
+      box: centos/7
 
   providers:
     - name: virtualbox
