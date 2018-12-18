@@ -1,4 +1,4 @@
 #!/usr/bin/env ansible-playbook
 - hosts: dataservers
   roles:
-    - role: base_postgres_role
+    - role: base_postgres
