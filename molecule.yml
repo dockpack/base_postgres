@@ -29,7 +29,9 @@ molecule:
 
 vagrant:
   raw_config_args:
-    - "ssh.insert_key = false"
+    - 'vm.synced_folder ".", "/vagrant", disabled: true'
+    - 'vbguest.auto_update = false'
+    - 'ssh.insert_key = false'
 
   platforms:
     - name: centos/7
