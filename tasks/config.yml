@@ -40,14 +40,6 @@
   tags:
     - bash
 
-- name: 'createdb for testing'
-  become: no
-  postgresql_db:
-    name: "{{ ansible_user }}"
-  tags:
-    - install
-    - init
-
 - name: 'init postgresql database'
   command: /etc/init.d/postgresql-{{ base_postgres_m }} initdb
   args:
