@@ -31,9 +31,8 @@
   become: yes
   when: ansible_os_family == 'RedHat'
   yum:
-    name: "{{ item }}"
+    name: "{{ base_postgres_packages }}"
     state: present
-  with_items: "{{ base_postgres_packages }}"
   tags:
     - install
     - postgres
@@ -41,10 +40,8 @@
 - name: 'install required libraries'
   become: yes
   pip:
-    name: "{{ item }}"
+    name: "{{ base_postgres_pips }}"
     state: present
-  with_items:
-    - "{{ base_postgres_pips }}"
   tags:
     - install
     - postgres
