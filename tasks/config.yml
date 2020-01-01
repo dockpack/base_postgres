@@ -2,15 +2,18 @@
 
 - name: 'make sure .bashrc exists'
   become: no
-  file: path=~/.bashrc state=file
+  file:
+    path: ~/.bashrc
+    state: file
   tags:
     - postgres
     - bash
 
 - name: 'amend path variable'
-  lineinfile: dest=~/.bashrc
-              line='export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
-              state=present
+  lineinfile:
+    dest: ~/.bashrc
+    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
+    state: present
   tags:
     - postgres
     - bash
@@ -18,7 +21,9 @@
 - name: 'make sure .bash_profile exists'
   become: yes
   become_user: postgres
-  file: path=/var/lib/pgsql/.bash_profile state=file
+  file:
+    path: /var/lib/pgsql/.bash_profile
+    state: file
   tags:
     - postgres
     - bash
@@ -26,15 +31,18 @@
 - name: 'amend path variable'
   become: yes
   become_user: postgres
-  lineinfile: dest=/var/lib/pgsql/.bash_profile
-              line='export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
-              state=present
+  lineinfile:
+    dest: /var/lib/pgsql/.bash_profile
+    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
+    state: present
   tags:
     - postgres
     - bash
 
 - name: 'init postgresql database'
-  command: /etc/init.d/postgresql-{{ base_postgres_m }} initdb creates=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+  command: /etc/init.d/postgresql-{{ base_postgres_m }} initdb
+  args:
+    creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
   become: yes
   notify:
     - restart postgresql-{{ base_postgres_m }}
@@ -45,7 +53,9 @@
     - postgres
 
 - name: 'init postgresql database'
-  command: /usr/pgsql-{{ base_postgres_m }}/bin/postgresql{{ base_postgres_s }}-setup initdb creates=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+  command: /usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_m }}-setup initdb
+  args:
+    creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
   become: yes
   notify:
     - restart postgresql-{{ base_postgres_m }}
@@ -56,7 +66,9 @@
     - postgres
 
 - name: 'ensure postgresql is running automatically at boot'
-  service: name=postgresql-{{ base_postgres_m }} enabled=yes
+  service:
+    name: "postgresql-{{ base_postgres_m }}"
+    enabled: yes
   become: yes
   when: ansible_os_family == 'RedHat'
   tags:
@@ -64,8 +76,11 @@
     - postgres
 
 - name: 'configure pg_hba.conf'
-  template: src={{ your_template_path | default() }}pg_hba.conf.j2 dest=/var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf backup=no
-            owner=postgres
+  template:
+    src: "{{ your_template_path | default() }}pg_hba.conf.j2"
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf"
+    backup: false
+    owner: postgres
   become: yes
   notify:
     - restart postgresql-{{ base_postgres_m }}
@@ -75,10 +90,12 @@
     - replica
 
 - name: 'copy start_pg_slave.sh'
-  template: src=start_pg_slave.sh.j2
-                 dest=/usr/local/bin/start_pg_slave.sh
-                 backup=no
-                 owner=root mode=0700
+  template:
+    src: start_pg_slave.sh.j2
+    dest: /usr/local/bin/start_pg_slave.sh
+    backup: no
+    owner: root
+    mode: 0700
   become: yes
   when: base_postgres_role is defined and base_postgres_role == "slave"
   tags:
@@ -88,26 +105,29 @@
 
 - name: 'unset ip to listen on to ipv4 localhost'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
-              insertbefore='^#listen_addresses'
-              line="listen_addresses = '127.0.0.1'"
-              state=absent
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertbefore: '^#listen_addresses'
+    line: "listen_addresses = '127.0.0.1'"
+    state: absent
   tags:
     - config
     - postgres
 
 - name: 'see if iptables file exists'
-  stat: path=/etc/sysconfig/iptables
+  stat:
+    path: /etc/sysconfig/iptables
   register: iptables
   tags:
     - postgres
 
 - name: 'fix "postgresql" in /etc/sysconfig/iptables file'
   become: yes
-  lineinfile: dest=/etc/sysconfig/iptables
-              line='-A INPUT -p tcp -m tcp --dport 5432 -j ACCEPT'
-              state=present
-              insertbefore=^COMMIT
+  lineinfile:
+    dest: /etc/sysconfig/iptables
+    line: '-A INPUT -p tcp -m tcp --dport 5432 -j ACCEPT'
+    state: present
+    insertbefore: ^COMMIT
   notify: restart iptables
   when: iptables is defined and iptables.stat.exists
   tags:
@@ -117,23 +137,32 @@
 
 - name: 'set listen on on ipv4 addresses'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertbefore='^#listen_addresses'
-              line="listen_addresses = '*'" state=present
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertbefore: '^#listen_addresses'
+    line: "listen_addresses = '*'"
+    state: present
   tags:
     - postgres
 
 - name: 'set replication setting: wal_level'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^listen_addresses'
-              line="wal_level = hot_standby" state=present
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertafter: '^listen_addresses'
+    line: 'wal_level = hot_standby'
+    state: present
   tags:
     - postgres
     - replica
 
 - name: 'set replication setting: max_wal_senders'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^#max_wal_senders'
-              line="max_wal_senders = 3" state=present
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertafter: '^#max_wal_senders'
+    line: 'max_wal_senders = 3'
+    state: present
   tags:
     - postgres
     - replica
@@ -148,38 +177,52 @@
 
 - name: 'set replication setting: wal_keep_segments'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^#wal_keep_segments'
-              line="wal_keep_segments = 8" state=present
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertafter: '^#wal_keep_segments'
+    line: 'wal_keep_segments = 8'
+    state: present
   tags:
     - postgres
     - replica
 
 - name: 'set replication setting: hot_standby'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^wal_keep_segments'
-              line="hot_standby = on" state=present
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertafter: '^wal_keep_segments'
+    line: 'hot_standby = on'
+    state: present
   tags:
     - postgres
     - replica
 
 - name: 'set replication setting: archive_mode'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^#archive_mode'
-              line="archive_mode = on" state=present
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertafter: '^#archive_mode'
+    line: 'archive_mode = on'
+    state: present
   tags:
     - postgres
     - replica
 
 - name: 'set replication setting: archive_command'
   become: yes
-  lineinfile: dest=/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf insertafter='^#archive_command'
-              line="archive_command = 'cd .'" state=present
+  lineinfile:
+    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    insertafter: '^#archive_command'
+    line: "archive_command = 'cd .'"
+    state: present
   tags:
     - postgres
     - replica
 
 - name: 'startup postgres'
-  service: name=postgresql-{{ base_postgres_m }} state=started
+  service:
+    name: "postgresql-{{ base_postgres_m }}"
+    state: started
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
     - postgres
@@ -187,7 +230,9 @@
     - pguser
 
 - name: 'initialize the postgresql user'
-  postgresql_user: name='{{ base_postgres_user }}' role_attr_flags='CREATEDB,CREATEROLE'
+  postgresql_user:
+    name: "{{ base_postgres_user }}"
+    role_attr_flags: 'CREATEDB,CREATEROLE'
   when: base_postgres_role is undefined or base_postgres_role == "master"
   become: yes
   become_user: postgres
@@ -197,7 +242,9 @@
     - pguser
 
 - name: 'set the password for the postgres user'
-  postgresql_user: name='{{ base_postgres_user }}' password="{{ base_postgres_pass }}"
+  postgresql_user:
+    name: "{{ base_postgres_user }}"
+    password: "{{ base_postgres_pass }}"
   become: yes
   become_user: postgres
   when: base_postgres_role is undefined or base_postgres_role == "master"
@@ -208,7 +255,10 @@
 - name: 'initialize the replicator user'
   become: yes
   become_user: postgres
-  postgresql_user: name='replicator' role_attr_flags='REPLICATION' password="{{ base_postgres_pass }}"
+  postgresql_user:
+    name: 'replicator'
+    role_attr_flags: 'REPLICATION'
+    password: "{{ base_postgres_pass }}"
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
     - postgres
