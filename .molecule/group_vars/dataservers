@@ -1,7 +1,0 @@
----
-!!python/object/new:m9dicts.dicts.UpdateWithMergeDict
-dictitems:
-  el_postgres_mip: 192.168.123.2
-  el_postgres_net: 192.168.123.1/24
-  el_postgres_pass: testpass
-  el_postgres_user: testuser
