@@ -16,7 +16,7 @@
 - name: 'amend path variable'
   lineinfile:
     dest: ~/.bashrc
-    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
+    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_s }}/bin'
     state: present
   tags:
     - bash
@@ -35,7 +35,7 @@
   become_user: postgres
   lineinfile:
     dest: /var/lib/pgsql/.bash_profile
-    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
+    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_s }}/bin'
     state: present
   tags:
     - bash
@@ -50,31 +50,31 @@
 - name: 'amend path variable'
   become: no
   lineinfile: dest=.bash_profile
-              line='export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
+              line='export PATH=$PATH:/usr/pgsql-{{ base_postgres_s }}/bin'
               state=present
   tags:
     - postgres
     - bash
 
 - name: 'init postgresql database'
-  command: /etc/init.d/postgresql-{{ base_postgres_m }} initdb
+  command: /etc/init.d/postgresql-{{ base_postgres_s }} initdb
   args:
-    creates: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    creates: /var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf
   become: yes
   notify:
-    - restart postgresql-{{ base_postgres_m }}
+    - restart postgresql-{{ base_postgres_s }}
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == "6"
   tags:
     - install
     - init
 
 - name: 'init postgresql database'
-  command: /usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_m }}-setup initdb
+  command: /usr/pgsql-{{ base_postgres_s }}/bin/postgresql-{{ base_postgres_s }}-setup initdb
   args:
-    creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    creates: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
   become: yes
   notify:
-    - restart postgresql-{{ base_postgres_m }}
+    - restart postgresql-{{ base_postgres_s }}
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == "7"
   tags:
     - install
@@ -82,7 +82,7 @@
 
 - name: 'ensure postgresql is running automatically at boot'
   service:
-    name: "postgresql-{{ base_postgres_m }}"
+    name: "postgresql-{{ base_postgres_s }}"
     enabled: yes
   become: yes
   when: ansible_os_family == 'RedHat'
@@ -92,12 +92,12 @@
 - name: 'configure pg_hba.conf'
   template:
     src: "{{ your_template_path | default() }}pg_hba.conf.j2"
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/pg_hba.conf"
     backup: false
     owner: postgres
   become: yes
   notify:
-    - restart postgresql-{{ base_postgres_m }}
+    - restart postgresql-{{ base_postgres_s }}
   tags:
     - config
     - replica
@@ -118,7 +118,7 @@
 - name: 'unset ip to listen on to ipv4 localhost'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertbefore: '^#listen_addresses'
     line: "listen_addresses = '127.0.0.1'"
     state: absent
@@ -146,7 +146,7 @@
 - name: 'set listen on on ipv4 addresses'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertbefore: '^#listen_addresses'
     line: "listen_addresses = '*'"
     state: present
@@ -156,7 +156,7 @@
 - name: 'set replication setting: wal_level'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertafter: '^listen_addresses'
     line: 'wal_level = hot_standby'
     state: present
@@ -166,7 +166,7 @@
 - name: 'set replication setting: max_wal_senders'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertafter: '^#max_wal_senders'
     line: 'max_wal_senders = 3'
     state: present
@@ -176,7 +176,7 @@
 #- name: 'set replication setting: checkpoint_segments'
 #  become: yes
 #  lineinfile:
-#    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+#    dest: /var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf
 #    insertafter: '^#checkpoint_segments'
 #    line: "checkpoint_segments = 8"
 #    state: present
@@ -186,7 +186,7 @@
 - name: 'set replication setting: wal_keep_segments'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertafter: '^#wal_keep_segments'
     line: 'wal_keep_segments = 8'
     state: present
@@ -196,7 +196,7 @@
 - name: 'set replication setting: hot_standby'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertafter: '^wal_keep_segments'
     line: 'hot_standby = on'
     state: present
@@ -206,7 +206,7 @@
 - name: 'set replication setting: archive_mode'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertafter: '^#archive_mode'
     line: 'archive_mode = on'
     state: present
@@ -216,7 +216,7 @@
 - name: 'set replication setting: archive_command'
   become: yes
   lineinfile:
-    dest: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    dest: "/var/lib/pgsql/{{ base_postgres_s }}/data/postgresql.conf"
     insertafter: '^#archive_command'
     line: "archive_command = 'cd .'"
     state: present
@@ -225,7 +225,7 @@
 
 - name: 'startup postgres'
   service:
-    name: "postgresql-{{ base_postgres_m }}"
+    name: "postgresql-{{ base_postgres_s }}"
     state: started
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
