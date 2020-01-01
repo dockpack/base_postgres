@@ -1,6 +1,10 @@
 ---
+<<<<<<< HEAD
 
 - name: 'verify the version of your OS'
+=======
+- name: 'verify the version of your OS.'
+>>>>>>> update
   fail:
     msg: 'enterprise undefined'
   when: ansible_os_family != "RedHat"
@@ -15,7 +19,6 @@
     - base_postgres_pass is undefined
   tags:
     - postgres
-
 
 - name: 'install the postgres yum repo'
   become: yes
@@ -40,8 +43,13 @@
 - name: 'install required libraries'
   become: yes
   pip:
+<<<<<<< HEAD
     name: "{{ base_postgres_pips }}"
     state: present
+=======
+    state: present
+    name: '{{ base_postgres_pips }}'
+>>>>>>> update
   tags:
     - install
     - postgres
