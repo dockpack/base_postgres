@@ -40,22 +40,6 @@
   tags:
     - bash
 
-- name: 'make sure .bash_profile exists'
-  become: no
-  file: path=.bash_profile state=file
-  tags:
-    - postgres
-    - bash
-
-- name: 'amend path variable'
-  become: no
-  lineinfile: dest=.bash_profile
-              line='export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
-              state=present
-  tags:
-    - postgres
-    - bash
-
 - name: 'init postgresql database'
   command: "/etc/init.d/postgresql-{{ base_postgres_s }} initdb"
   args:
