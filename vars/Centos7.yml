@@ -1,0 +1,6 @@
+---
+
+base_postgres_dependencies:
+  - libxslt
+  - python-pip
+  - systemd-sysv

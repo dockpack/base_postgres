@@ -17,10 +17,6 @@ base_postgres_packages:
   - postgresql{{ base_postgres_s }}-contrib
   - python-psycopg2
 
-base_postgres_dependencies:
-  - libxslt
-  - python-pip
-
 base_postgres_pips:
   - pexpect
 

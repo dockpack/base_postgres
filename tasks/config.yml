@@ -5,43 +5,18 @@
     src: postgres_goss.yml
     dest: /root/postgres_goss.yml
 
-- name: 'make sure .bashrc exists'
+- name: 'make sure bash profile exists'
   become: no
-  file:
-    path: ~/.bashrc
-    state: file
+  copy:
+    dest: /etc/profile.d/postgres.sh
+    content: "export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin"
+    mode: 0644
   tags:
-    - bash
-
-- name: 'amend path variable'
-  lineinfile:
-    dest: ~/.bashrc
-    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
-    state: present
-  tags:
-    - bash
-
-- name: 'make sure .bash_profile exists'
-  become: yes
-  become_user: postgres
-  file:
-    path: /var/lib/pgsql/.bash_profile
-    state: file
-  tags:
-    - bash
-
-- name: 'amend path variable'
-  become: yes
-  become_user: postgres
-  lineinfile:
-    dest: /var/lib/pgsql/.bash_profile
-    line: 'export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin'
-    state: present
-  tags:
+    - postgres
     - bash
 
 - name: 'init postgresql database'
-  command: "/etc/init.d/postgresql-{{ base_postgres_s }} initdb"
+  command: "/etc/init.d/postgresql-{{ base_postgres_m }} initdb"
   args:
     creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
   become: yes
