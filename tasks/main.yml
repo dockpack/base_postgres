@@ -1,5 +1,21 @@
 ---
 
+- name: 'verify the version of your OS'
+  fail:
+    msg: 'enterprise undefined'
+  when: ansible_os_family != "RedHat"
+  tags:
+    - postgres
+
+- name: 'make sure base_postgres_user and base_postgres_pass are defined.'
+  fail:
+    msg: 'variables undefined'
+  when:
+    - base_postgres_user is undefined
+    - base_postgres_pass is undefined
+  tags:
+    - postgres
+
 # Install as root
 - include: install.yml
 
