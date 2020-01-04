@@ -6,7 +6,6 @@
     dest: /root/ test_postgres.yml
 
 - name: 'make sure bash profile exists'
-  become: no
   copy:
     dest: /etc/profile.d/postgres.sh
     content: "export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin"
