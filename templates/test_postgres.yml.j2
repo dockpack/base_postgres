@@ -1,0 +1,65 @@
+file:
+  /bin/psql:
+    exists: true
+    mode: "0777"
+    owner: root
+    group: root
+    linked-to: /etc/alternatives/pgsql-psql
+    filetype: symlink
+    contains: []
+  /root/goss.yaml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /usr/bin/goss:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    contains: []
+  /var/lib/pgsql/{{ base_postgres_m }}/data:
+    exists: true
+    mode: "0700"
+    owner: postgres
+    group: postgres
+    filetype: directory
+    contains: []
+  /var/lib/pgsql/{{ base_postgres_m }}/data/PG_VERSION:
+    exists: true
+    mode: "0600"
+    owner: postgres
+    group: postgres
+    filetype: file
+    contains: []
+  /var/lib/pgsql/{{ base_postgres_m }}/data/base:
+    exists: true
+    mode: "0700"
+    owner: postgres
+    group: postgres
+    filetype: directory
+    contains: []
+  /var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf:
+    exists: true
+    mode: "0600"
+    owner: postgres
+    group: postgres
+    filetype: file
+    contains: []
+  /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf:
+    exists: true
+    mode: "0600"
+    owner: postgres
+    group: postgres
+    filetype: file
+    contains: []
+service:
+  postgresql-{{ base_postgres_m }}:
+    enabled: true
+    running: true
+user:
+  postgres:
+    exists: true
+    groups:
