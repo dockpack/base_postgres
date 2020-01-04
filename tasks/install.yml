@@ -1,24 +1,16 @@
 ---
 
-- name: 'verify the version of your OS'
-  fail:
-    msg: 'enterprise undefined'
-  when: ansible_os_family != "RedHat"
+- name: 'yum install dependencies'
+  become: yes
+  yum:
+    name: "{{ base_postgres_dependencies }}"
+    state: present
   tags:
-    - postgres
-
-- name: 'make sure base_postgres_user and base_postgres_pass are defined.'
-  fail:
-    msg: 'variables undefined'
-  when:
-    - base_postgres_user is undefined
-    - base_postgres_pass is undefined
-  tags:
+    - install
     - postgres
 
 - name: 'install the postgres yum repo'
   become: yes
-  when: ansible_os_family == 'RedHat'
   yum:
     name: "{{ base_postgres_repo }}"
     state: present
@@ -28,9 +20,10 @@
 
 - name: 'install postgres packages'
   become: yes
-  when: ansible_os_family == 'RedHat'
   yum:
     name: "{{ base_postgres_packages }}"
+    disablerepo: "*"
+    enablerepo: "pgdg{{ base_postgres_s }}"
     state: present
   tags:
     - install
