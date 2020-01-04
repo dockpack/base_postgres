@@ -1,9 +1,0 @@
-#!/usr/bin/env ansible-playbook
-- hosts: dataservers
-  vars:
-    - vault_postgres_user: test_db_user
-    - vault_postgres_pass: test_password
-  roles:
-    - role: dockpack.base_epel
-    - role: dockpack.base_goss
-    - role: base_postgres
