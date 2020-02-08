@@ -2,7 +2,7 @@
 
 - name: Copy goss tests template
   template:
-    src:  test_postgres.yml.j2
+    src: test_postgres.yml.j2
     dest: /root/ test_postgres.yml
 
 - name: 'make sure bash profile exists'
