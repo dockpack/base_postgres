@@ -3,3 +3,5 @@ yamllint==1.8.1
 ansible-lint==3.4.15
 molecule==1.25.1
 python-vagrant
+
+jinja2>=2.10.1 # not directly required, pinned by Snyk to avoid a vulnerability
