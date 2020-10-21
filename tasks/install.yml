@@ -17,6 +17,7 @@
   yum:
     name: "{{ base_postgres_repo }}"
     state: present
+    disable_gpg_check: true
   tags:
     - install
     - postgres
