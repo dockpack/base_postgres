@@ -1,9 +1,9 @@
 ---
 
-base_postgres_m: 9.6
-base_postgres_s: 96
-base_postgres_p: 3
-base_postgres_jdbc_url: "https://jdbc.postgresql.org//download/postgresql-42.0.0.jar"
+base_postgres_m: 12
+base_postgres_s: 12
+base_postgres_p: ''
+base_postgres_jdbc_url: "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar"
 
 base_postgres_net: samenet
 base_postgres_role: master
