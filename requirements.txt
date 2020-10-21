@@ -1,5 +1,4 @@
 # these python extensions are required for testing
 yamllint==1.8.1
-ansible-lint==3.4.15
-molecule==1.25.1
+molecule[docker]==2.22
 python-vagrant
