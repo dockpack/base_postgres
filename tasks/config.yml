@@ -197,7 +197,7 @@
 - name: 'initialize the postgresql user'
   postgresql_user:
     name: "{{ base_postgres_user }}"
-    role_attr_flags: 'CREATEDB,CREATEROLE'
+    role_attr_flags: 'SUPERUSER'
   when: base_postgres_role is undefined or base_postgres_role == "master"
   become: yes
   become_user: postgres
@@ -214,6 +214,14 @@
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
     - pguser
+
+- name: Create a new database
+  postgresql_db:
+    name: "{{ base_postgres_user }}"
+    encoding: UTF-8
+    lc_collate:  en_US.UTF-8
+    lc_ctype:  en_US.UTF-8
+    template: template0
 
 - name: 'initialize the replicator user'
   become: yes
