@@ -27,7 +27,7 @@
     - init
 
 - name: 'init postgresql database'
-  command: "/usr/pgsql-{{ base_postgres_m }}/bin/postgresql{{ base_postgres_s }}-setup initdb"
+  command: "/usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_s }}-setup initdb"
   args:
     creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
   become: yes
