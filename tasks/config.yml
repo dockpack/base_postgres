@@ -179,6 +179,12 @@
   tags:
     - replica
 
+- name: 'configure ssl'
+  when:
+    - postgresql_ssl is defined
+    - postgresql_ssl == 'on'
+  include_tasks: ssl.yml
+
 - name: 'startup postgres'
   service:
     name: "postgresql-{{ base_postgres_m }}"
