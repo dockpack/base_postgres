@@ -1,34 +1,34 @@
 ---
 file:
-  /var/lib/pgsql/9.6/data:
+  /var/lib/pgsql/12/data:
     exists: true
     mode: "0700"
     owner: postgres
     group: postgres
     filetype: directory
     contains: []
-  /var/lib/pgsql/9.6/data/PG_VERSION:
+  /var/lib/pgsql/12/data/PG_VERSION:
     exists: true
     mode: "0600"
     owner: postgres
     group: postgres
     filetype: file
     contains: []
-  /var/lib/pgsql/9.6/data/base:
+  /var/lib/pgsql/12/data/base:
     exists: true
     mode: "0700"
     owner: postgres
     group: postgres
     filetype: directory
     contains: []
-  /var/lib/pgsql/9.6/data/pg_hba.conf:
+  /var/lib/pgsql/12/data/pg_hba.conf:
     exists: true
     mode: "0600"
     owner: postgres
     group: postgres
     filetype: file
     contains: []
-  /var/lib/pgsql/9.6/data/postgresql.conf:
+  /var/lib/pgsql/12/data/postgresql.conf:
     exists: true
     mode: "0600"
     owner: postgres
@@ -36,7 +36,7 @@ file:
     filetype: file
     contains: []
 service:
-  postgresql-9.6:
+  postgresql-12:
     enabled: true
     running: true
 user:
