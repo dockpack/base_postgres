@@ -1,0 +1,42 @@
+---
+- name: 'chgrp postgres'
+  file:
+    path: "{{ item }}"
+    group: postgres
+  with_items:
+    - "{{ postgresql_ssl_ca_file }}"
+    - "{{ postgresql_ssl_cert_file }}"
+    - "{{ postgresql_ssl_key_file }}"
+    - /etc/ssl/postgresql/
+
+- name: 'enable ssl'
+  become: yes
+  lineinfile:
+    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    insertafter: '^#ssl = off'
+    line: "ssl = on"
+    state: present
+
+- name: 'enable ssl_ca_file'
+  become: yes
+  lineinfile:
+    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    insertafter: '^#ssl_ca_file'
+    line: "ssl_ca_file = '{{ postgresql_ssl_ca_file }}'"
+    state: present
+
+- name: 'enable ssl_cert_file'
+  become: yes
+  lineinfile:
+    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    insertafter: '^#ssl_cert_file'
+    line: "ssl_cert_file = '{{ postgresql_ssl_cert_file }}'"
+    state: present
+
+- name: 'enable ssl_key_file'
+  become: yes
+  lineinfile:
+    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    insertafter: '^#ssl_key_file'
+    line: "ssl_key_file = '{{ postgresql_ssl_key_file }}'"
+    state: present
