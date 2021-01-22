@@ -3,6 +3,7 @@
 base_postgres_m: 12
 base_postgres_s: 12
 base_postgres_p: ''
+# yamllint disable-line rule:line-length
 base_postgres_jdbc_url: "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar"
 
 base_postgres_net: samenet
