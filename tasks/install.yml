@@ -17,6 +17,7 @@
   yum:
     name: "{{ base_postgres_repo }}"
     state: present
+    disable_gpg_check: true
   tags:
     - install
     - postgres
@@ -25,8 +26,7 @@
   become: yes
   yum:
     name: "{{ base_postgres_packages }}"
-    disablerepo: "*"
-    enablerepo: "pgdg{{ base_postgres_s }}"
+    update_cache: true
     state: present
   tags:
     - install

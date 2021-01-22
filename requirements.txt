@@ -1,7 +1,6 @@
 # these python extensions are required for testing
 yamllint==1.8.1
-ansible-lint==3.4.15
-molecule==1.25.1
+molecule[docker]==2.22
 python-vagrant
-
 jinja2>=2.10.1 # not directly required, pinned by Snyk to avoid a vulnerability
+ansible>=2.9.10 # not directly required, pinned by Snyk to avoid a vulnerability
