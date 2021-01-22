@@ -1,10 +1,11 @@
 ---
 
 - name: 'include vars'
+  # yamllint disable-line rule:line-length
   include_vars: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}.yml"
 
 - name: 'yum install dependencies'
-  become: yes
+  become: true
   yum:
     name: "{{ base_postgres_dependencies }}"
     state: present
@@ -13,7 +14,7 @@
     - postgres
 
 - name: 'install the postgres yum repo'
-  become: yes
+  become: true
   yum:
     name: "{{ base_postgres_repo }}"
     state: present
@@ -23,7 +24,7 @@
     - postgres
 
 - name: 'install postgres packages'
-  become: yes
+  become: true
   yum:
     name: "{{ base_postgres_packages }}"
     update_cache: true
@@ -33,7 +34,7 @@
     - postgres
 
 - name: 'install required libraries'
-  become: yes
+  become: true
   pip:
     name: "{{ base_postgres_pips }}"
     state: present

@@ -4,6 +4,7 @@
   template:
     src: test_postgres.yml.j2
     dest: /root/ test_postgres.yml
+    mode: 0640
 
 - name: 'make sure bash profile exists'
   copy:
@@ -18,21 +19,24 @@
   command: "/etc/init.d/postgresql-{{ base_postgres_m }} initdb"
   args:
     creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
-  become: yes
+  become: true
   notify:
     - restart postgresql
+  # yamllint disable-line rule:line-length
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == "6"
   tags:
     - install
     - init
 
 - name: 'init postgresql database'
+  # yamllint disable-line rule:line-length
   command: "/usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_s }}-setup initdb"
   args:
     creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
-  become: yes
+  become: true
   notify:
     - restart postgresql
+  # yamllint disable-line rule:line-length
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == "7"
   tags:
     - install
@@ -41,8 +45,8 @@
 - name: 'ensure postgresql is running automatically at boot'
   service:
     name: "postgresql-{{ base_postgres_m }}"
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true
   when: ansible_os_family == 'RedHat'
   tags:
     - install
@@ -51,9 +55,10 @@
   template:
     src: "{{ your_template_path | default() }}pg_hba.conf"
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf
-    backup: no
+    backup: false
     owner: postgres
-  become: yes
+    mode: 0600
+  become: true
   notify:
     - restart postgresql
   tags:
@@ -64,17 +69,17 @@
   template:
     src: start_pg_slave.sh
     dest: /usr/local/bin/start_pg_slave.sh
-    backup: no
+    backup: false
     owner: root
     mode: 0700
-  become: yes
+  become: true
   when: base_postgres_role is defined and base_postgres_role == "slave"
   tags:
     - config
     - replica
 
 - name: 'unset ip to listen on to ipv4 localhost'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertbefore: s'^#listen_addresses'
@@ -89,7 +94,7 @@
   register: iptables
 
 - name: 'fix "postgresql" in /etc/sysconfig/iptables file'
-  become: yes
+  become: true
   lineinfile:
     dest: /etc/sysconfig/iptables
     line: '-A INPUT -p tcp -m tcp --dport 5432 -j ACCEPT'
@@ -102,7 +107,7 @@
     - iptables
 
 - name: 'set listen on on ipv4 addresses'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertbefore: '^#listen_addresses'
@@ -110,7 +115,7 @@
     state: present
 
 - name: 'set replication setting: wal_level'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertbefore: '^listen_addresses'
@@ -120,7 +125,7 @@
     - replica
 
 - name: 'set replication setting: max_wal_senders'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#max_wal_senders'
@@ -129,18 +134,18 @@
   tags:
     - replica
 
-#- name: 'set replication setting: checkpoint_segments'
-#  become: yes
-#  lineinfile:
-#    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
-#    insertafter: '^#checkpoint_segments'
-#    line: "checkpoint_segments = 8"
-#    state: present
-#  tags:
-#    - replica
+# - name: 'set replication setting: checkpoint_segments'
+#   become: true
+#   lineinfile:
+#     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+#     insertafter: '^#checkpoint_segments'
+#     line: "checkpoint_segments = 8"
+#     state: present
+#   tags:
+#     - replica
 
 - name: 'set replication setting: wal_keep_segments'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#wal_keep_segments'
@@ -150,7 +155,7 @@
     - replica
 
 - name: 'set replication setting: hot_standby'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^wal_keep_segments'
@@ -160,7 +165,7 @@
     - replica
 
 - name: 'set replication setting: archive_mode'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#archive_mode'
@@ -170,7 +175,7 @@
     - replica
 
 - name: 'set replication setting: archive_command'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#archive_command'
@@ -199,7 +204,7 @@
     name: "{{ base_postgres_user }}"
     role_attr_flags: 'SUPERUSER'
   when: base_postgres_role is undefined or base_postgres_role == "master"
-  become: yes
+  become: true
   become_user: postgres
   register: create_pg_user
   tags:
@@ -209,7 +214,7 @@
   postgresql_user:
     name: "{{ base_postgres_user }}"
     password: "{{ base_postgres_pass }}"
-  become: yes
+  become: true
   become_user: postgres
   when: base_postgres_role is undefined or base_postgres_role == "master"
   tags:
@@ -219,12 +224,12 @@
   postgresql_db:
     name: "{{ base_postgres_user }}"
     encoding: UTF-8
-    lc_collate:  en_US.UTF-8
-    lc_ctype:  en_US.UTF-8
+    lc_collate: en_US.UTF-8
+    lc_ctype: en_US.UTF-8
     template: template0
 
 - name: 'initialize the replicator user'
-  become: yes
+  become: true
   become_user: postgres
   postgresql_user:
     name: 'replicator'

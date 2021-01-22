@@ -10,7 +10,7 @@
     - /etc/ssl/postgresql/
 
 - name: 'enable ssl'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#ssl = off'
@@ -18,7 +18,7 @@
     state: present
 
 - name: 'enable ssl_ca_file'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#ssl_ca_file'
@@ -26,7 +26,7 @@
     state: present
 
 - name: 'enable ssl_cert_file'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#ssl_cert_file'
@@ -34,7 +34,7 @@
     state: present
 
 - name: 'enable ssl_key_file'
-  become: yes
+  become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
     insertafter: '^#ssl_key_file'

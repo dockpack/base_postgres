@@ -1,8 +1,10 @@
-# these python extensions are required for testing
-yamllint==1.8.1
-molecule[docker]==2.22
-python-vagrant
-
+# these python extensions are for testing
+tox
+sh==1.12.14
+molecule
+molecule-docker
+yamllint
+ansible-lint
+docker==4.2.2
 anyconfig>=0.10.0 # not directly required, pinned by Snyk to avoid a vulnerability
-jinja2>=2.10.1 # not directly required, pinned by Snyk to avoid a vulnerability
-ansible>=2.9.10 # not directly required, pinned by Snyk to avoid a vulnerability
+
