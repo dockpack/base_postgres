@@ -2,5 +2,7 @@
 yamllint==1.8.1
 molecule[docker]==2.22
 python-vagrant
+
+anyconfig>=0.10.0 # not directly required, pinned by Snyk to avoid a vulnerability
 jinja2>=2.10.1 # not directly required, pinned by Snyk to avoid a vulnerability
 ansible>=2.9.10 # not directly required, pinned by Snyk to avoid a vulnerability
