@@ -1,7 +1,7 @@
 PostgreSQL Master/Slave
 =========
 
-PostgreSQL 9.6 on one or two RHEL/Centos boxes.
+PostgreSQL 12 on one or two RHEL/Centos boxes.
 
 Requirements
 ------------
