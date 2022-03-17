@@ -19,13 +19,13 @@ The first three vars you must set, the others are optional.
     base_postgres_pass # This is your password
 
     base_postgres_net  # 192.168.20.0/24 This is the subnet granted access
-    base_postgres_role # With 2 hosts the one is master, the other slave
-    base_postgres_sip  # The ip address of the slave when you use 2 databases
+    base_postgres_role # With 2 hosts the one is primary, the other replica
+    base_postgres_sip  # The ip address of the replica when you use 2 databases
 
 
 Dependencies
 ------------
-Ansible Tower 2.4.5 is compatible with this.
+RedHat-like Linux
 
 Example Playbook
 ----------------
