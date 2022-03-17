@@ -5,7 +5,7 @@ PostgreSQL 12 on one or two RHEL/Centos boxes.
 
 Requirements
 ------------
-Internet. RedHat Linux 6 or 7, or Centos 6 or 7.
+Internet. RedHat Linux 7 or 8, or Centos 7 or 8.
 
 This role wast tested with molecule:
 
