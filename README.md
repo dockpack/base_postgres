@@ -19,7 +19,7 @@ The first three vars you must set, the others are optional.
     base_postgres_pass # This is your password
 
     base_postgres_net  # 192.168.20.0/24 This is the subnet granted access
-	  base_postgres_role # With 2 hosts the one is master, the other slave
+    base_postgres_role # With 2 hosts the one is master, the other slave
     base_postgres_sip  # The ip address of the slave when you use 2 databases
 
 
