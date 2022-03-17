@@ -1,6 +1,0 @@
----
-
-base_postgres_dependencies:
-  - libxslt
-  - python-pip
-  - initscripts

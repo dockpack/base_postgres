@@ -7,19 +7,6 @@ file:
     linked-to: /etc/alternatives/pgsql-psql
     filetype: symlink
     contains: []
-  /root/goss.yaml:
-    exists: true
-    mode: "0644"
-    owner: root
-    group: root
-    filetype: file
-    contains: []
-  /usr/bin/goss:
-    exists: true
-    mode: "0755"
-    owner: root
-    group: root
-    contains: []
   /var/lib/pgsql/{{ base_postgres_m }}/data:
     exists: true
     mode: "0700"
@@ -33,7 +20,7 @@ file:
     owner: postgres
     group: postgres
     filetype: file
-    contains: []
+    contains: '12'
   /var/lib/pgsql/{{ base_postgres_m }}/data/base:
     exists: true
     mode: "0700"

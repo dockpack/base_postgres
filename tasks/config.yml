@@ -1,57 +1,63 @@
 ---
 
+- name: Ensure goss directory exists
+  file:
+    path: /etc/goss.d
+    mode: 0755
+    state: directory
+  tags:
+    - test_postgres
+
 - name: Copy goss tests template
   template:
     src: test_postgres.yml.j2
-    dest: /root/ test_postgres.yml
+    dest: /etc/goss.d/test_postgres.yml
     mode: 0640
+  tags:
+    - test_postgres
 
-- name: 'make sure bash profile exists'
+- name: Ensure bash profile exists
   copy:
     dest: /etc/profile.d/postgres.sh
     content: "export PATH=$PATH:/usr/pgsql-{{ base_postgres_m }}/bin"
     mode: 0644
   tags:
-    - postgres
+    - config
     - bash
 
-- name: 'init postgresql database'
-  command: "/etc/init.d/postgresql-{{ base_postgres_m }} initdb"
-  args:
-    creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
-  become: true
-  notify:
-    - restart postgresql
-  # yamllint disable-line rule:line-length
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == "6"
+- name: Create directory for systemd override
+  file:
+    path: "/etc/systemd/system/postgresql-{{ base_postgres_m }}.service.d"
+    state: directory
+    mode: '0755'
   tags:
-    - install
-    - init
+    - config
 
-- name: 'init postgresql database'
+- name: Override PGDATA for systemd service
+  copy:
+    # yamllint disable-line rule:line-length
+    dest: "/etc/systemd/system/postgresql-{{ base_postgres_m }}.service.d/override.conf"
+    mode: 0640
+    content: |
+      [Service]
+      Environment=PGDATA={{ base_postgres_pgdata }}
+  tags:
+    - config
+
+- name: Initialize postgresql database
   # yamllint disable-line rule:line-length
   command: "/usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_s }}-setup initdb"
   args:
     creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
   become: true
-  notify:
-    - restart postgresql
+  notify: Start postgresql
   # yamllint disable-line rule:line-length
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == "7"
+  when: ansible_os_family == 'RedHat'
   tags:
     - install
     - init
 
-- name: 'ensure postgresql is running automatically at boot'
-  service:
-    name: "postgresql-{{ base_postgres_m }}"
-    enabled: true
-  become: true
-  when: ansible_os_family == 'RedHat'
-  tags:
-    - install
-
-- name: 'configure pg_hba.conf'
+- name: Configure pg_hba.conf
   template:
     src: "{{ your_template_path | default() }}pg_hba.conf"
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf
@@ -59,26 +65,25 @@
     owner: postgres
     mode: 0600
   become: true
-  notify:
-    - restart postgresql
+  notify: Start postgresql
   tags:
     - config
     - replica
 
-- name: 'copy start_pg_slave.sh'
+- name: Copy start_pg_replica.sh
   template:
-    src: start_pg_slave.sh
-    dest: /usr/local/bin/start_pg_slave.sh
+    src: start_pg_replica.sh
+    dest: /usr/local/bin/start_pg_replica.sh
     backup: false
     owner: root
     mode: 0700
   become: true
-  when: base_postgres_role is defined and base_postgres_role == "slave"
+  when: base_postgres_role is defined and base_postgres_role == "replica"
   tags:
     - config
     - replica
 
-- name: 'unset ip to listen on to ipv4 localhost'
+- name: Unset ip to listen on to ipv4 localhost
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -88,25 +93,7 @@
   tags:
     - config
 
-- name: 'see if iptables file exists'
-  stat:
-    path: /etc/sysconfig/iptables
-  register: iptables
-
-- name: 'fix "postgresql" in /etc/sysconfig/iptables file'
-  become: true
-  lineinfile:
-    dest: /etc/sysconfig/iptables
-    line: '-A INPUT -p tcp -m tcp --dport 5432 -j ACCEPT'
-    state: present
-    insertbefore: ^COMMIT
-  notify: restart iptables
-  when: iptables is defined and iptables.stat.exists
-  tags:
-    - config
-    - iptables
-
-- name: 'set listen on on ipv4 addresses'
+- name: Set listen on on ipv4 addresses
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -114,7 +101,7 @@
     line: "listen_addresses = '*'"
     state: present
 
-- name: 'set replication setting: wal_level'
+- name: Set replication setting wal_level
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -124,7 +111,7 @@
   tags:
     - replica
 
-- name: 'set replication setting: max_wal_senders'
+- name: Set replication setting max_wal_senders
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -134,7 +121,7 @@
   tags:
     - replica
 
-# - name: 'set replication setting: checkpoint_segments'
+# - name: Set replication setting: checkpoint_segments
 #   become: true
 #   lineinfile:
 #     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -144,7 +131,7 @@
 #   tags:
 #     - replica
 
-- name: 'set replication setting: wal_keep_segments'
+- name: Set replication setting wal_keep_segments
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -154,7 +141,7 @@
   tags:
     - replica
 
-- name: 'set replication setting: hot_standby'
+- name: Set replication setting hot_standby
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -164,7 +151,7 @@
   tags:
     - replica
 
-- name: 'set replication setting: archive_mode'
+- name: Set replication setting archive_mode
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -174,7 +161,7 @@
   tags:
     - replica
 
-- name: 'set replication setting: archive_command'
+- name: Set replication setting archive_command
   become: true
   lineinfile:
     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
@@ -184,68 +171,69 @@
   tags:
     - replica
 
-- name: 'configure ssl'
+- name: Configure ssl
   when:
     - postgresql_ssl is defined
     - postgresql_ssl == 'on'
   include_tasks: ssl.yml
 
-- name: 'startup postgres'
-  service:
+- name: Start postgres
+  systemd:
     name: "postgresql-{{ base_postgres_m }}"
     state: started
-  when: base_postgres_role is undefined or base_postgres_role == "master"
+    enabled: true
+  when: base_postgres_role is undefined or base_postgres_role == "primary"
   tags:
     - config
     - pguser
 
-- name: 'initialize the postgresql user'
+- name: Initialize the postgresql user
   postgresql_user:
     name: "{{ base_postgres_user }}"
     role_attr_flags: 'SUPERUSER'
-  when: base_postgres_role is undefined or base_postgres_role == "master"
+  when: base_postgres_role is undefined or base_postgres_role == "primary"
   become: true
   become_user: postgres
   register: create_pg_user
   tags:
     - pguser
 
-- name: 'set the password for the postgres user'
+- name: Set the password for the postgres user
   postgresql_user:
     name: "{{ base_postgres_user }}"
     password: "{{ base_postgres_pass }}"
   become: true
   become_user: postgres
-  when: base_postgres_role is undefined or base_postgres_role == "master"
+  when: base_postgres_role is undefined or base_postgres_role == "primary"
   tags:
     - pguser
 
 - name: Create a new database
   postgresql_db:
     name: "{{ base_postgres_user }}"
-    encoding: UTF-8
-    lc_collate: en_US.UTF-8
-    lc_ctype: en_US.UTF-8
+    lc_collate: 'en_US.UTF-8'
+    lc_ctype: 'en_US.UTF-8'
     template: template0
 
-- name: 'initialize the replicator user'
+- name: Initialize the replicator user
   become: true
   become_user: postgres
   postgresql_user:
     name: 'replicator'
     role_attr_flags: 'REPLICATION'
     password: "{{ base_postgres_pass }}"
-  when: base_postgres_role is undefined or base_postgres_role == "master"
+  when: base_postgres_role is undefined or base_postgres_role == "primary"
   tags:
     - pguser
     - replica
 
-- name: 'start the slave with the script in /usr/local/bin'
+- name: Start the replica with the script in /usr/local/bin
   expect:
-    command: /usr/local/bin/start_pg_slave.sh
+    command: /usr/local/bin/start_pg_replica.sh
     responses:
       Password: "{{ base_postgres_pass }}"
-  when: base_postgres_role is defined and base_postgres_role == "slave"
+  when: base_postgres_role is defined and base_postgres_role == "replica"
   tags:
     - replica
-    - startslave
+    - replica
+...
