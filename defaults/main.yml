@@ -5,21 +5,10 @@ base_postgres_s: 12
 base_postgres_p: ''
 # yamllint disable-line rule:line-length
 base_postgres_jdbc_url: "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar"
-
+base_postgres_pgdata: "/var/lib/pgsql/{{ base_postgres_m }}/data"
 base_postgres_net: samenet
-base_postgres_role: master
-
-# As of 15 April 2019, there is only one repository RPM per distro,
-# and it includes repository information for all available PostgreSQL releases.
-# yamllint disable-line rule:line-length
-base_postgres_repo: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
-base_postgres_packages:
-  - postgresql{{ base_postgres_s }}-server
-  - postgresql{{ base_postgres_s }}-contrib
-  - python-psycopg2
-
-base_postgres_pips:
-  - pexpect
+base_postgres_role: primary
 
 # I never dared changing:
 base_postgres_port: 5432
+...

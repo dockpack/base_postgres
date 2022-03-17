@@ -1,20 +1,16 @@
 ---
 
 # handlers file for actions that are notified: by a play
-- name: 'start postgresql'
+- name: Start postgresql
   become: true
-  service:
+  systemd:
     name: "postgresql-{{ base_postgres_m }}"
     state: started
 
-- name: 'restart postgresql'
+- name: Restart postgresql
   become: true
-  service:
+  systemd:
     name: "postgresql-{{ base_postgres_m }}"
     state: restarted
 
-- name: 'restart iptables'
-  become: true
-  service:
-    name: iptables
-    state: restarted
+...

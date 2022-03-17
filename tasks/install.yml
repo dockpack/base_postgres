@@ -1,31 +1,33 @@
 ---
 
-- name: 'include vars'
+- name: Include vars
   # yamllint disable-line rule:line-length
-  include_vars: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}.yml"
+  include_vars: "{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
 
-- name: 'yum install dependencies'
+- name: Install dependencies
   become: true
-  yum:
+  package:
     name: "{{ base_postgres_dependencies }}"
     state: present
   tags:
     - install
     - postgres
 
-- name: 'install the postgres yum repo'
+- name: Install the postgres yum repo
+  when: ansible_os_family == 'RedHat'
   become: true
   yum:
     name: "{{ base_postgres_repo }}"
     state: present
     disable_gpg_check: true
+    validate_certs: false
   tags:
     - install
     - postgres
 
-- name: 'install postgres packages'
+- name: Install postgres packages
   become: true
-  yum:
+  package:
     name: "{{ base_postgres_packages }}"
     update_cache: true
     state: present
@@ -33,7 +35,7 @@
     - install
     - postgres
 
-- name: 'install required libraries'
+- name: Install required libraries
   become: true
   pip:
     name: "{{ base_postgres_pips }}"
@@ -41,4 +43,4 @@
   tags:
     - install
     - postgres
-    - startslave
+...

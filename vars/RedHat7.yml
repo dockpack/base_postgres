@@ -1,6 +1,19 @@
 ---
 
+# As of 15 April 2019, there is only one repository RPM per distro,
+# and it includes repository information for all available PostgreSQL releases.
+# yamllint disable-line rule:line-length
+base_postgres_repo: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+
+base_postgres_packages:
+  - postgresql{{ base_postgres_s }}-server
+  - postgresql{{ base_postgres_s }}-contrib
+  - python-psycopg2
+
+base_postgres_pips:
+  - pexpect
 base_postgres_dependencies:
   - libxslt
   - python-pip
   - systemd-sysv
+...
