@@ -1,4 +1,4 @@
-PostgreSQL Master/Slave
+PostgreSQL primary/replica
 =========
 
 PostgreSQL 12 on one or two RHEL/Centos boxes.
@@ -28,21 +28,20 @@ Dependencies
 ------------
 RedHat-like Linux
 
-Example Playbook
+Example
 ----------------
-
-Including an example of how to use your role (for instance, with variables
-passed in as parameters) is always nice for users too:
 
 # Inventory
 [dataservers]
 data1 role=primary
 data2 role=replica
 
-# Example playbook for dbserver tier
+# Playbook for dbserver tier
 
----yaml
-- name: 'dbservers.yml'
+
+```yaml
+---
+- name: Database deployment
   hosts: dbservers
   become: yes
   gather_facts: True
@@ -62,6 +61,7 @@ data2 role=replica
   post_tasks:
     - include: dbservers/post_tasks.yml
 ```
+
 License
 -------
 
