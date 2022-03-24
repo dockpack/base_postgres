@@ -1,0 +1,37 @@
+---
+
+- name: Install the postgres yum repo
+  when: ansible_os_family == 'RedHat'
+  become: true
+  yum:
+    name: "{{ base_postgres_repo }}"
+    state: present
+    disable_gpg_check: true
+    validate_certs: false
+  tags:
+    - install
+    - postgres
+
+- name: Disable PostgreSQL from AppStream
+  when: ansible_distribution_major_version|int >= 8
+  dnf:
+    name: "@postgresql"
+    state: absent
+
+- name: Install postgres packages
+  become: true
+  package:
+    name: "{{ base_postgres_packages }}"
+    update_cache: true
+    state: present
+  tags:
+    - install
+    - postgres
+
+- name: Set postgres variables
+  set_fact:
+    # yamllint disable-line rule:line-length
+    postgres_setup: "/usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_m }}-setup"
+    base_postgres_pgdata: "/var/lib/pgsql/{{ base_postgres_m }}/data"
+    base_postgres_service: "postgresql-{{ base_postgres_m }}"
+...

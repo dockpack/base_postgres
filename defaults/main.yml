@@ -1,11 +1,13 @@
 ---
+# Variable to install from postgres.org (when true)
+# or from on-premises yum repo (when false)
+use_postgresql_org_repo: true
 
-base_postgres_m: 12
-base_postgres_s: 12
-base_postgres_p: ''
+# Select the PostgreSQL version to install
+base_postgres_m: 10
+
 # yamllint disable-line rule:line-length
 base_postgres_jdbc_url: "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar"
-base_postgres_pgdata: "/var/lib/pgsql/{{ base_postgres_m }}/data"
 base_postgres_net: samenet
 base_postgres_role: primary
 

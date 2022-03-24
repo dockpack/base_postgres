@@ -12,8 +12,8 @@ lint: |
   ansible-lint
   ansible-later -qq
 platforms:
-  - name: base-postgres-ubi8
-    image: registry.access.redhat.com/ubi8/ubi-init
+  - name: base-postgres-centos8
+    image: quay.io/centos/centos:stream8
     command: /sbin/init
     privileged: true
     tmpfs:

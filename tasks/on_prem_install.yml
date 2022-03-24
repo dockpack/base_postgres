@@ -1,0 +1,50 @@
+---
+- name: Install CentOS software collections
+  when:
+    - ansible_distribution_major_version|int < 8
+    - ansible_distribution == 'CentOS'
+  package:
+    name: centos-release-scl
+    state: present
+
+- name: Enable RHEL software collections
+  # yamllint disable-line rule:line-length
+  command: "yum-config-manager --enable rhel-server-rhscl-{{ ansible_distribution_major_version }}-rpms"
+  when:
+    - ansible_distribution == 'RedHat'
+    - ansible_distribution_major_version|int < 8
+
+- name: Enable AppStream
+  when: ansible_distribution_major_version|int >= 8
+  dnf:
+    name: "@postgresql:{{ base_postgres_m }}"
+    state: present
+
+- name: Install postgres packages
+  become: true
+  package:
+    name: "{{ here_postgres_packages }}"
+    update_cache: true
+    state: present
+  tags:
+    - install
+    - postgres
+
+- name: Set postgres_setup
+  set_fact:
+    postgres_setup: "/bin/postgresql-setup"
+
+- name: Set postgres_data_dir
+  when: ansible_distribution_major_version|int >= 8
+  set_fact:
+    base_postgres_pgdata: "/var/lib/pgsql/data"
+    base_postgres_service: "postgresql"
+
+- name: Set postgres data directory
+  when: ansible_distribution_major_version|int < 8
+  set_fact:
+    # yamllint disable-line rule:line-length
+    base_postgres_pgdata: "/var/opt/rh/rh-postgresql{{ base_postgres_m }}/lib/pgsql/data"
+    base_postgres_service: "rh-postgresql{{ base_postgres_m }}-postgresql"
+
+...

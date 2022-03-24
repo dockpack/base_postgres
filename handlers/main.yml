@@ -4,13 +4,13 @@
 - name: Start postgresql
   become: true
   systemd:
-    name: "postgresql-{{ base_postgres_m }}"
+    name: "{{ base_postgres_service }}"
     state: started
 
 - name: Restart postgresql
   become: true
   systemd:
-    name: "postgresql-{{ base_postgres_m }}"
+    name: "{{ base_postgres_service }}"
     state: restarted
 
 ...
