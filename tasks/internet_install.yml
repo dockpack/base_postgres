@@ -1,5 +1,17 @@
 ---
 
+- name: Disable PostgreSQL from AppStream
+  when: ansible_distribution_major_version|int >= 8
+  command: "yum module disable postgresql -y"
+  args:
+    warn: false
+  register: appstream_disable
+  changed_when: false
+  # this is a workaround because the below does not work
+  #  dnf:
+  #    name: "@postgresql"
+  #    state: absent
+
 - name: Install the postgres yum repo
   when: ansible_os_family == 'RedHat'
   become: true
@@ -8,15 +20,10 @@
     state: present
     disable_gpg_check: true
     validate_certs: false
+    update_cache: true
   tags:
     - install
     - postgres
-
-- name: Disable PostgreSQL from AppStream
-  when: ansible_distribution_major_version|int >= 8
-  dnf:
-    name: "@postgresql"
-    state: absent
 
 - name: Install postgres packages
   become: true
