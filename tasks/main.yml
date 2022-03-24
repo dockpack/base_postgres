@@ -7,6 +7,10 @@
   tags:
     - postgres
 
+- name: Include vars
+  # yamllint disable-line rule:line-length
+  include_vars: "{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
+
 - name: 'Ensure base_postgres_user and base_postgres_pass are defined.'
   fail:
     msg: 'variables undefined'
@@ -16,9 +20,36 @@
   tags:
     - postgres
 
-- name: Install as root
-  include_tasks: install.yml
+- name: Install dependencies
+  become: true
+  package:
+    name: "{{ base_postgres_dependencies }}"
+    state: present
+  tags:
+    - install
+
+- name: Install from the package manager
+  when: not use_postgresql_org_repo
+  include_tasks: on_prem_install.yml
+  tags:
+    - install
+
+- name: Install from internet
+  when: use_postgresql_org_repo|bool
+  include_tasks: internet_install.yml
+  tags:
+    - install
+
+- name: Install required libraries
+  become: true
+  pip:
+    name: "{{ base_postgres_pips }}"
+    state: present
+  tags:
+    - install
 
 - name: Configure as postgres
   include_tasks: config.yml
+  tags:
+    - config
 ...

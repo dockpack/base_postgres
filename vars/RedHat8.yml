@@ -2,12 +2,21 @@
 
 # As of 15 April 2019, there is only one repository RPM per distro,
 # and it includes repository information for all available PostgreSQL releases.
+# use_postgresql_org_repo should be true to use it
 # yamllint disable-line rule:line-length
 base_postgres_repo: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 
 base_postgres_packages:
-  - postgresql{{ base_postgres_s }}-server
-  - postgresql{{ base_postgres_s }}-contrib
+  - postgresql{{ base_postgres_m }}
+  - postgresql{{ base_postgres_m }}-server
+  - postgresql{{ base_postgres_m }}-contrib
+  - python3-psycopg2
+
+# These packages are installed from AppStream
+# use_postgresql_org_repo should be false to use them
+here_postgres_packages:
+  - postgresql-server
+  - postgresql-contrib
   - python3-psycopg2
 
 base_postgres_pips:

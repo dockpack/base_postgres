@@ -45,10 +45,9 @@
     - config
 
 - name: Initialize postgresql database
-  # yamllint disable-line rule:line-length
-  command: "/usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_s }}-setup initdb"
+  command: "{{ postgres_setup }} initdb"
   args:
-    creates: "/var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf"
+    creates: "{{ base_postgres_pgdata }}/postgresql.conf"
   become: true
   notify: Start postgresql
   # yamllint disable-line rule:line-length
@@ -60,7 +59,7 @@
 - name: Configure pg_hba.conf
   template:
     src: "{{ your_template_path | default() }}pg_hba.conf"
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/pg_hba.conf
+    dest: "{{ base_postgres_pgdata }}/pg_hba.conf"
     backup: false
     owner: postgres
     mode: 0600
@@ -86,7 +85,7 @@
 - name: Unset ip to listen on to ipv4 localhost
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertbefore: s'^#listen_addresses'
     line: "listen_addresses = '127.0.0.1'"
     state: absent
@@ -96,7 +95,7 @@
 - name: Set listen on on ipv4 addresses
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertbefore: '^#listen_addresses'
     line: "listen_addresses = '*'"
     state: present
@@ -104,7 +103,7 @@
 - name: Set replication setting wal_level
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertbefore: '^listen_addresses'
     line: "wal_level = hot_standby"
     state: present
@@ -114,7 +113,7 @@
 - name: Set replication setting max_wal_senders
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertafter: '^#max_wal_senders'
     line: "max_wal_senders = 3"
     state: present
@@ -124,7 +123,7 @@
 # - name: Set replication setting: checkpoint_segments
 #   become: true
 #   lineinfile:
-#     dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+#     dest: "{{ base_postgres_pgdata }}/postgresql.conf"
 #     insertafter: '^#checkpoint_segments'
 #     line: "checkpoint_segments = 8"
 #     state: present
@@ -134,7 +133,7 @@
 - name: Set replication setting wal_keep_segments
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertafter: '^#wal_keep_segments'
     line: "wal_keep_segments = 8"
     state: present
@@ -144,7 +143,7 @@
 - name: Set replication setting hot_standby
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertafter: '^wal_keep_segments'
     line: "hot_standby = on"
     state: present
@@ -154,7 +153,7 @@
 - name: Set replication setting archive_mode
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertafter: '^#archive_mode'
     line: "archive_mode = on"
     state: present
@@ -164,7 +163,7 @@
 - name: Set replication setting archive_command
   become: true
   lineinfile:
-    dest: /var/lib/pgsql/{{ base_postgres_m }}/data/postgresql.conf
+    dest: "{{ base_postgres_pgdata }}/postgresql.conf"
     insertafter: '^#archive_command'
     line: "archive_command = 'cd .'"
     state: present
@@ -179,7 +178,7 @@
 
 - name: Start postgres
   systemd:
-    name: "postgresql-{{ base_postgres_m }}"
+    name: "{{ base_postgres_service }}"
     state: started
     enabled: true
   when: base_postgres_role is undefined or base_postgres_role == "primary"
