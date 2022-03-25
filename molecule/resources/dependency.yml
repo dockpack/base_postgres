@@ -1,13 +1,14 @@
 ---
-- hosts: all
+- hosts: localhost
 
   tasks:
-    - name: "Create docker network(s)"
+    - name: "Create docker network"
+      run_once: true
       docker_network:
-        name: "postgres"
+        name: postgres
         ipam_config:
           - subnet: "10.16.1.0/24"
             gateway: "10.16.1.254"
         state: present
         labels:
-        owner: molecule
+          owner: molecule
