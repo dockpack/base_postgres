@@ -9,7 +9,7 @@ lint: |
   ansible-later -qq
 platforms:
   - name: primary-postgres-centos8
-    image: centos/systemd
+    image: quay.io/centos/centos:stream8
     command: /sbin/init
     privileged: true
     groups:
@@ -27,17 +27,17 @@ platforms:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
   - name: replica-postgres-centos8
-    image: centos/systemd
+    image: quay.io/centos/centos:stream8
     command: /sbin/init
     privileged: true
     groups:
       - postgres
     docker_networks:
-      - name: 'redis'
+      - name: 'postgres'
         ipam_config:
           - subnet: '10.16.1.0/24'
     networks:
-      - name: "redis"
+      - name: "postgres"
         ipv4_address: '10.16.1.13'
     tmpfs:
       - /run
@@ -58,7 +58,6 @@ provisioner:
         base_postgres_role: replica
   playbooks:
     dependency: ../resources/dependency.yml
-    prepare: ../resources/prepare.yml
     converge: ../resources/converge.yml
     verify: ../resources/verify.yml
 verifier:

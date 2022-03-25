@@ -23,7 +23,7 @@ platforms:
         ipam_config:
           - subnet: '10.16.1.0/24'
     networks:
-      - name: "redis"
+      - name: "postgres"
         ipv4_address: '10.16.1.10'
     tmpfs:
       - /run
@@ -41,7 +41,7 @@ platforms:
         ipam_config:
           - subnet: '10.16.1.0/24'
     networks:
-      - name: "redis"
+      - name: "postgres"
         ipv4_address: '10.16.1.11'
     tmpfs:
       - /run
