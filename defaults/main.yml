@@ -3,7 +3,7 @@
 # or from on-premises yum repo (when false)
 use_postgresql_org_repo: true
 
-# Select the PostgreSQL version to install
+# Select the PostgreSQL version to install (10, 11, 12)
 base_postgres_m: 10
 
 # yamllint disable-line rule:line-length
