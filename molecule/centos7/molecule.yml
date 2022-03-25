@@ -17,7 +17,7 @@ platforms:
     command: /sbin/init
     privileged: true
     groups:
-      - postgres
+      - postgres_master
     docker_networks:
       - name: 'postgres'
         ipam_config:
@@ -35,7 +35,7 @@ platforms:
     command: /sbin/init
     privileged: true
     groups:
-      - postgres
+      - postgres_replica
     docker_networks:
       - name: 'postgres'
         ipam_config:
@@ -55,6 +55,10 @@ provisioner:
       stdout_callback: yaml
       executable: /bin/bash
   inventory:
+    group_vars:
+      all:
+        base_postgres_mip: '10.16.1.10'
+        base_postgres_sip: '10.16.1.11'
     host_vars:
       primary-postgres-centos8:
         base_postgres_role: primary
