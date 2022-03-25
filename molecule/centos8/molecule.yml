@@ -51,6 +51,10 @@ provisioner:
       stdout_callback: yaml
       executable: /bin/bash
   inventory:
+    group_vars:
+      all:
+        base_postgres_mip: '10.16.1.12'
+        base_postgres_sip: '10.16.1.13'
     host_vars:
       primary-postgres-centos8:
         base_postgres_role: primary
