@@ -1,0 +1,11 @@
+---
+
+- name: "Create docker network(s)"
+  docker_network:
+    name: "postgres"
+    ipam_config:
+      - subnet: "10.16.1.0/24"
+        gateway: "10.16.1.254"
+    state: present
+    labels:
+      owner: molecule
