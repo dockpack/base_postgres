@@ -69,19 +69,6 @@
     - config
     - replica
 
-- name: Copy start_pg_replica.sh
-  template:
-    src: start_pg_replica.sh
-    dest: /usr/local/bin/start_pg_replica.sh
-    backup: false
-    owner: root
-    mode: 0700
-  become: true
-  when: base_postgres_role is defined and base_postgres_role == "replica"
-  tags:
-    - config
-    - replica
-
 - name: Unset ip to listen on to ipv4 localhost
   become: true
   lineinfile:

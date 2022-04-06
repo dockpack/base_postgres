@@ -41,4 +41,17 @@
     postgres_setup: "/usr/pgsql-{{ base_postgres_m }}/bin/postgresql-{{ base_postgres_m }}-setup"
     base_postgres_pgdata: "/var/lib/pgsql/{{ base_postgres_m }}/data"
     base_postgres_service: "postgresql-{{ base_postgres_m }}"
+
+- name: Copy start_pg_replica.sh
+  template:
+    src: start_pg_replica.sh
+    dest: /usr/local/bin/start_pg_replica.sh
+    backup: false
+    owner: root
+    mode: 0700
+  become: true
+  when: base_postgres_role is defined and base_postgres_role == "replica"
+  tags:
+    - config
+    - replica
 ...

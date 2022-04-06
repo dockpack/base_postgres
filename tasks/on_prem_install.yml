@@ -47,4 +47,16 @@
     base_postgres_pgdata: "/var/opt/rh/rh-postgresql{{ base_postgres_m }}/lib/pgsql/data"
     base_postgres_service: "rh-postgresql{{ base_postgres_m }}-postgresql"
 
+- name: Copy start_pg_replica.sh
+  template:
+    src: start_pg_replica.sh
+    dest: /usr/local/bin/start_pg_replica.sh
+    backup: false
+    owner: root
+    mode: 0700
+  become: true
+  when: base_postgres_role is defined and base_postgres_role == "replica"
+  tags:
+    - config
+    - replica
 ...
