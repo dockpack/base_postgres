@@ -12,7 +12,7 @@
   template:
     src: test_postgres.yml.j2
     dest: /etc/goss.d/test_postgres.yml
-    mode: 0640
+    mode: 0644
   tags:
     - test_postgres
 
