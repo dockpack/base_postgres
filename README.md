@@ -18,7 +18,7 @@ The first three vars you must set, the others are optional.
 1. `base_postgres_mip`  # This is the ip address of the primary/master database
 1. `base_postgres_user` # This is your user
 1. `base_postgres_pass` # This is your password
- 
+
 1. `base_postgres_net`  # 192.168.20.0/24 This is the subnet granted access
 1. `base_postgres_role` # With 2 hosts the one is primary, the other replica
 1. `base_postgres_sip`  # The ip address of the replica when you use 2 databases
@@ -45,7 +45,7 @@ data2 role=replica
   hosts: dbservers
   become: yes
   gather_facts: True
-  
+
   vars_files:
     - dbservers/secrets.yml
 
@@ -71,4 +71,3 @@ Author Information
 ------------------
 http://twitter.com/bbaassssiiee
 https://github.com/dockpack/base_postgres_role.git
-
