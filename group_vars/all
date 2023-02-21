@@ -1,7 +1,0 @@
----
-# Example vars
-base_postgres_user: "{{ vault_postgres_testuser }}"
-base_postgres_pass: "{{ vault_postgres_testpass }}"
-base_postgres_mip: 192.168.56.2
-base_postgres_sip: 192.168.56.4
-...
